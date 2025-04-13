@@ -1,0 +1,58 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "cmake configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-G",
+                "Visual Studio 17 2022",
+                "-A",
+                "x64",
+                "-DUSE_ASIO=ON",
+                "-DUSE_BEAST=OFF",
+                "-DUSE_POCO=OFF",
+                "-B",
+                "build",
+                "-S",
+                "."
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "cmake build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--config",
+                "Debug"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": ["cmake configure"]
+        },        
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "if (Test-Path build) { Remove-Item -Recurse -Force build }",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "build"
+        }
+    ]
+}
