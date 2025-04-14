@@ -113,15 +113,15 @@ void AsioClient::disconnect() {
     }
 }
 
-void AsioClient::setOnConnected(std::function<void()> callback) {
+void AsioClient::setOnConnected(ConnectionCallback callback) {
     mOnConnected = std::move(callback);
 }
 
-void AsioClient::setOnDisconnected(std::function<void()> callback) {
+void AsioClient::setOnDisconnected(ConnectionCallback callback) {
     mOnDisconnected = std::move(callback);
 }
 
-void AsioClient::setOnDataReceived(std::function<void(const std::string&)> callback) {
+void AsioClient::setOnDataReceived(DataCallback callback) {
     mOnDataReceived = std::move(callback);
 }
 

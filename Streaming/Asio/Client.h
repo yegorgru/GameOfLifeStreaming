@@ -17,9 +17,9 @@ public:
 public:
     bool connect(const std::string& multicastAddress, int port) override;
     void disconnect() override;
-    void setOnConnected(std::function<void()> callback) override;
-    void setOnDisconnected(std::function<void()> callback) override;
-    void setOnDataReceived(std::function<void(const std::string&)> callback) override;
+    void setOnConnected(ConnectionCallback callback) override;
+    void setOnDisconnected(ConnectionCallback callback) override;
+    void setOnDataReceived(DataCallback callback) override;
     bool isConnected() const override;
 private:
     void startReceive();

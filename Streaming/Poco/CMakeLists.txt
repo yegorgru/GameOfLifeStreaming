@@ -5,7 +5,7 @@ set_property(TARGET StreamingPoco PROPERTY CXX_STANDARD 20)
 
 find_package(Poco REQUIRED COMPONENTS Net Util Foundation)
 
-target_link_libraries(StreamingPoco PUBLIC Poco::Net Poco::Util Poco::Foundation)
+target_link_libraries(StreamingPoco PUBLIC Poco::Net Poco::Util Poco::Foundation GLUtils)
 
 target_include_directories(StreamingPoco PUBLIC 
     "${CMAKE_CURRENT_SOURCE_DIR}" 

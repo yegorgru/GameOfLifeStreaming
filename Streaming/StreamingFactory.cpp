@@ -4,11 +4,11 @@
 #include "Asio/Client.h"
 #include "Asio/Server.h"
 #elif defined(USE_BEAST)
-#include "Beast/BeastClient.h"
-#include "Beast/BeastServer.h"
+#include "Beast/Client.h"
+#include "Beast/Server.h"
 #elif defined(USE_POCO)
-#include "Poco/PocoClient.h"
-#include "Poco/PocoServer.h"
+#include "Poco/Client.h"
+#include "Poco/Server.h"
 #else
 #error "No streaming implementation selected"
 #endif
