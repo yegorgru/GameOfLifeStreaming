@@ -20,7 +20,10 @@ target_include_directories(Client PRIVATE
     "${CMAKE_SOURCE_DIR}/GLUtils"
     "${CMAKE_SOURCE_DIR}/../Streaming"
     "${RAYLIB_INCLUDE_DIR}"
+    "${BOOST_ROOT}"
 )
+
+target_link_directories(Client PUBLIC "${BOOST_LIB_DIR}")
 
 if(MSVC)
     target_compile_options(Client PRIVATE /W4)

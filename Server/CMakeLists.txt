@@ -9,7 +9,10 @@ target_include_directories(Server PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}" 
     "${CMAKE_SOURCE_DIR}/GLUtils"
     "${CMAKE_SOURCE_DIR}/../Streaming"
+    "${BOOST_ROOT}"
 )
+
+target_link_directories(Server PUBLIC "${BOOST_LIB_DIR}")
 
 if(MSVC)
     target_compile_options(Server PRIVATE /W4)
