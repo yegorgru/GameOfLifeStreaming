@@ -202,10 +202,8 @@ Application::GridSize Application::getGridDimensions(const std::string& frame) {
         if (parsedWidth > 0 && parsedHeight > 0 && parsedWidth < 2000 && parsedHeight < 2000) {
             return {parsedWidth, parsedHeight};
         }
-    } catch (const std::invalid_argument& e) {
+    } catch (const std::invalid_argument&) {
         Print::PrintLine(Print::composeMessage("Invalid number in header: ", header), std::cerr);
-    } catch (const std::out_of_range& e) {
-        Print::PrintLine(Print::composeMessage("Number out of range in header: ", header), std::cerr);
     }
 
     Print::PrintLine(Print::composeMessage("Failed to parse header: ", header), std::cerr);

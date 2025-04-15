@@ -108,7 +108,7 @@ void Config::validateMulticastAddress(const std::string& address) {
     namespace po = boost::program_options;
     boost::system::error_code ec;
     auto ip_address = boost::asio::ip::make_address(address, ec);
-    if (ec || !ip_address.is_multicast()) {
+    if (ec) {
         throw po::validation_error(po::validation_error::invalid_option_value, "multicast-address", address);
     }
 }
