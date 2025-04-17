@@ -87,9 +87,12 @@ int GameOfLife::countLivingNeighbors(int x, int y) const {
 }
 
 bool GameOfLife::isAlive(int x, int y) const {
-    if (x < 0 || x >= mWidth || y < 0 || y >= mHeight) {
-        return false;
-    }
+    if (x < 0) x = mWidth - 1;
+    else if (x >= mWidth) x = 0;
+    
+    if (y < 0) y = mHeight - 1;
+    else if (y >= mHeight) y = 0;
+    
     return mGrid[y][x];
 }
 
