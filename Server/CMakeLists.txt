@@ -3,7 +3,7 @@ add_executable(Server ${SERVER_SOURCES})
 
 set_property(TARGET Server PROPERTY CXX_STANDARD 20)
 
-target_link_libraries(Server PRIVATE Streaming GLUtils)
+target_link_libraries(Server PRIVATE Streaming)
 
 target_include_directories(Server PRIVATE 
     "${CMAKE_CURRENT_SOURCE_DIR}" 

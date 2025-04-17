@@ -8,7 +8,6 @@ target_link_directories(Client PUBLIC "${RAYLIB_LIB_DIR}")
 target_link_libraries(Client PRIVATE 
     raylib
     Streaming 
-    GLUtils
 )
 
 if(WIN32)
