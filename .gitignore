@@ -42,6 +42,7 @@ ipch/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+!.vscode/c_cpp_properties.json
 
 # Compiled Object files
 *.slo

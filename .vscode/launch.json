@@ -11,6 +11,7 @@
                 "--fps", "30",
                 "--cell-size", "50",
                 "--multicast-address", "127.0.0.1",
+                //"--multicast-address", "239.255.0.1",
                 "--log-level", "debug",
             ],
             "stopAtEntry": false,
@@ -29,7 +30,8 @@
                 "--log-level", "debug",
                 "--fps", "15",
                 "--grid-size", "60x30",
-                "--multicast-address", "127.0.0.1"
+                "--multicast-address", "127.0.0.1",
+                //"--multicast-address", "239.255.0.1",
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

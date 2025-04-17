@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/GLUtils",
+                "${workspaceFolder}/Streaming",
+                "${workspaceFolder}/Client",
+                "${workspaceFolder}/Server",
+                "C:/local/boost_1_86_0",
+                "C:/Program Files (x86)/Poco/include",
+                "C:/Program Files (x86)/raylib/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22000.0",
+            "compilerPath": "cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+}
