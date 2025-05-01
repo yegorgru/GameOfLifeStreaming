@@ -29,7 +29,7 @@ Config::Config()
         ("fps,f", po::value<int>()->default_value(30)->notifier(Config::validateFps), "target frames per second (1-60)")
         ("multicast-address,m", po::value<std::string>()->default_value("239.255.0.1")->notifier(Config::validateMulticastAddress), "multicast group address")
         ("log-level,l", po::value<std::string>()->default_value("info")->notifier(Config::validateLogLevel), "log level (trace, debug, info, warning, error, fatal)")
-        ("log-file", po::value<std::string>()->default_value(""), "path to log file (if empty, logs to console)");
+        ("log-file,L", po::value<std::string>()->default_value(""), "path to log file (if empty, logs to console)");
 }
 
 bool Config::parseCommandLine(int argc, char* argv[]) {

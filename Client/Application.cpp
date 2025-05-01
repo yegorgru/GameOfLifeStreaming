@@ -24,6 +24,8 @@ Application::~Application() {
 }
 
 bool Application::initialize(int argc, char* argv[]) {
+    Print::initConsolePrinter();
+
     if (!mConfig.parseCommandLine(argc, argv)) {
         return false;
     }

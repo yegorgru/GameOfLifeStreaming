@@ -26,6 +26,8 @@ Application::~Application() {
 }
 
 bool Application::initialize(int argc, char* argv[]) {
+    Print::initConsolePrinter();
+
     if (!mConfig.parseCommandLine(argc, argv)) {
         return false;
     }
@@ -102,7 +104,7 @@ bool Application::setupServer() {
         
         Log::Info("Starting server on port " + std::to_string(mConfig.getPort()) + " with multicast " + mConfig.getMulticastAddress());
         
-        if (!mServer->start(mConfig.getMulticastAddress(), mConfig.getPort())) {
+        if (!mServer->start(mConfig.getMulticastAddress(), mConfig.getPort(), mConfig.getThreadCount())) {
             Log::Error("Failed to start server on port " + std::to_string(mConfig.getPort()));
             return false;
         }

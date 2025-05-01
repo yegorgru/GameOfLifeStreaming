@@ -49,7 +49,8 @@ void Acceptor::initAccept() {
             if (!mIsStopped) {
                 initAccept();
             }
-        });
+        }
+    );
 }
 
 } // namespace Streaming::Beast
