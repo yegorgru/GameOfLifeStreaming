@@ -9,7 +9,7 @@
             "args": [
                 "--server-port", "9000",
                 "--fps", "30",
-                "--cell-size", "50",
+                "--cell-size", "30",
                 "--multicast-address", "computer.host",
                 //"--multicast-address", "239.255.0.1",
                 "--log-level", "debug"

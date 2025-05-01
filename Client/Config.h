@@ -25,7 +25,6 @@ private:
     static void validatePort(int port);
     static void validateCellSize(int size);
     static void validateFps(int fps);
-    static void validateMulticastAddress(const std::string& address);
     static void validateLogLevel(const std::string& level);
 private:
     using VariablesMap = boost::program_options::variables_map;

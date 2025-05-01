@@ -27,7 +27,7 @@ Config::Config()
         ("server-port,p", po::value<int>()->default_value(9090)->notifier(Config::validatePort), "multicast port (0-65535)")
         ("cell-size,c", po::value<int>()->default_value(20)->notifier(Config::validateCellSize), "size of each cell in pixels (5-50)")
         ("fps,f", po::value<int>()->default_value(30)->notifier(Config::validateFps), "target frames per second (1-60)")
-        ("multicast-address,m", po::value<std::string>()->default_value("239.255.0.1")->notifier(Config::validateMulticastAddress), "multicast group address")
+        ("multicast-address,m", po::value<std::string>()->default_value("239.255.0.1"), "multicast group address")
         ("log-level,l", po::value<std::string>()->default_value("info")->notifier(Config::validateLogLevel), "log level (trace, debug, info, warning, error, fatal)")
         ("log-file,L", po::value<std::string>()->default_value(""), "path to log file (if empty, logs to console)");
 }
@@ -101,15 +101,6 @@ void Config::validateFps(int fps) {
     namespace po = boost::program_options;
     if (fps < 1 || fps > 60) {
         throw po::validation_error(po::validation_error::invalid_option_value, "fps", std::to_string(fps));
-    }
-}
-
-void Config::validateMulticastAddress(const std::string& address) {
-    namespace po = boost::program_options;
-    boost::system::error_code ec;
-    auto ip_address = boost::asio::ip::make_address(address, ec);
-    if (ec) {
-        throw po::validation_error(po::validation_error::invalid_option_value, "multicast-address", address);
     }
 }
 

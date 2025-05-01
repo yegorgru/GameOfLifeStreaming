@@ -31,7 +31,6 @@ private:
     static void validateGridSize(const std::string& input);
     static void validateFillRatio(float ratio);
     static void validateThreadCount(int count);
-    static void validateMulticastAddress(const std::string& address);
 private:
     using VariablesMap = boost::program_options::variables_map;
     using Description = boost::program_options::options_description;

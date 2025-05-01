@@ -32,7 +32,7 @@ Config::Config()
         ("grid-size,g", po::value<std::string>()->default_value("40x20")->notifier(Config::validateGridSize), "grid size in format WxH (e.g., 40x20)")
         ("fill-ratio,r", po::value<float>()->default_value(0.3f)->notifier(Config::validateFillRatio), "percentage of initially alive cells (0.0-1.0)")
         ("threads,t", po::value<int>()->default_value(2)->notifier(Config::validateThreadCount), "number of threads in the thread pool (1-64)")
-        ("multicast-address,m", po::value<std::string>()->default_value("239.255.0.1")->notifier(Config::validateMulticastAddress), "multicast group address");
+        ("multicast-address,m", po::value<std::string>()->default_value("239.255.0.1"), "multicast group address");
 }
 
 bool Config::parseCommandLine(int argc, char* argv[]) {
@@ -142,15 +142,6 @@ void Config::validateThreadCount(int count) {
     namespace po = boost::program_options;
     if (count < 1 || count > 64) {
         throw po::validation_error(po::validation_error::invalid_option_value, "threads", std::to_string(count));
-    }
-}
-
-void Config::validateMulticastAddress(const std::string& address) {
-    namespace po = boost::program_options;
-    boost::system::error_code ec;
-    auto ip_address = boost::asio::ip::make_address(address, ec);
-    if (ec) {
-        throw po::validation_error(po::validation_error::invalid_option_value, "multicast-address", address);
     }
 }
 
