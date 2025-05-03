@@ -42,6 +42,23 @@
             "dependsOn": ["cmake configure"]
         },        
         {
+            "label": "cmake build release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--config",
+                "Release"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": "$msCompile",
+            "group": "build",
+            "dependsOn": ["cmake configure"]
+        },
+        {
             "label": "clean",
             "type": "shell",
             "command": "if (Test-Path build) { Remove-Item -Recurse -Force build }",
