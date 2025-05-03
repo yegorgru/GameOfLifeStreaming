@@ -21,8 +21,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-option(USE_ASIO "Use Boost.Asio implementation" ON)
-option(USE_BEAST "Use Boost.Beast implementation" OFF)
+option(USE_ASIO "Use Boost.Asio implementation" OFF)
+option(USE_BEAST "Use Boost.Beast implementation" ON)
 option(USE_POCO "Use POCO implementation" OFF)
 
 add_subdirectory(GLUtils)

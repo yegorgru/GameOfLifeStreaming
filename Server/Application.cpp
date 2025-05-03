@@ -5,6 +5,7 @@
 #include <csignal>
 #include <thread>
 #include <chrono>
+#include <string>
 
 namespace GameOfLife::Server {
 
@@ -68,11 +69,22 @@ void Application::run() {
     mGameOfLife = std::make_unique<GameOfLife>(width, height);
     mGameOfLife->initializeRandom(mConfig.getFillRatio());
 
+    uint64_t iteration = 0;
+
     while (mRunning && !gShutdownRequested) {
         mGameOfLife->update();        
-        std::string asciiFrame = mGameOfLife->toString();
-        mServer->broadcastData(asciiFrame);
         
+        // Send current timestamp instead of game data
+        auto now = std::chrono::system_clock::now();
+        auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+        std::string timestamp = std::to_string(nowMs) + "\n";
+
+        auto asciiData = mGameOfLife->toString();
+        Print::PrintLine(asciiData, std::cout);
+        Print::PrintLine("Iteration: " + std::to_string(iteration++), std::cout);
+        
+        mServer->broadcastData(timestamp);
+        Log::Info("Broadcasting timestamp: " + timestamp);
         std::this_thread::sleep_for(std::chrono::milliseconds(frameDelayMs));
     }
 

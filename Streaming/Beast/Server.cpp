@@ -73,6 +73,10 @@ bool BeastServer::start(const std::string& address, int port, int threadCount) {
 }
 
 void BeastServer::stop() {
+    Print::PrintLine("Stats: Total connections: " + std::to_string(mServerStats.totalConnections) +
+                     ", Closed connections: " + std::to_string(mServerStats.closedConnections));
+
+
     if (!mRunning.exchange(false)) {
         Log::Warning("BeastServer::stop called but server is not running.");
         return;
@@ -138,6 +142,7 @@ void BeastServer::addSession(SessionPtr session) {
     if (!session) {
         return;
     }
+    mServerStats.totalConnections++;
     std::lock_guard<std::mutex> lock(mSessionsMutex);
     mSessions.insert(session);
     Log::Debug(Print::composeMessage("Session added. Total sessions: ", mSessions.size()));
@@ -147,6 +152,7 @@ void BeastServer::removeSession(SessionPtr session) {
     if (!session) {
         return;
     }
+    mServerStats.closedConnections++;
     std::lock_guard<std::mutex> lock(mSessionsMutex);
     mSessions.erase(session);
     Log::Debug(Print::composeMessage("Session removed. Total sessions: ", mSessions.size()));

@@ -6,6 +6,7 @@
 #include <thread>
 #include <chrono>
 #include <algorithm>
+#include <numeric>  // для std::accumulate
 
 #include "Log.h"
 
@@ -82,9 +83,11 @@ void Application::shutdown() {
         Print::PrintLine("Shutting down client...");
         mRunning = false;
 
-        if (mClient) {
-            mClient->disconnect();
-            mClient.reset();
+        for (auto& client : mClients) {
+            if (client) {
+                client->disconnect();
+                client.reset();
+            }
         }
 
         if (IsWindowReady()) {
@@ -96,13 +99,18 @@ void Application::shutdown() {
 
 bool Application::setupClient() {
     try {
-        mClient = Streaming::StreamingFactory::CreateClient();
+        for (uint64_t i = 0; i < clientsNumber; ++i) {
+            mClients.push_back(Streaming::StreamingFactory::CreateClient());
+        }
         setupCallbacks();
 
         Print::PrintLine(Print::composeMessage("Connecting via multicast group ", mConfig.getMulticastAddress(), " on port ", mConfig.getServerPort()));
-        if (!mClient->connect(mConfig.getMulticastAddress(), mConfig.getServerPort())) {
-            Print::PrintLine("Failed to join multicast group!", std::cerr);
-            return false;
+        for (size_t i = 0; i < mClients.size(); ++i) {
+            Print::PrintLine(Print::composeMessage("Connecting client ", i + 1, " of ", mClients.size(), "..."));
+            if (!mClients[i]->connect(mConfig.getMulticastAddress(), mConfig.getServerPort())) {
+                Print::PrintLine("Failed to join multicast group!", std::cerr);
+                return false;
+            }
         }
         return true;
     }
@@ -113,21 +121,53 @@ bool Application::setupClient() {
 }
 
 void Application::setupCallbacks() {
-    mClient->setOnDataReceived([this](const std::string& data) {
-        std::lock_guard<std::mutex> lock(mFrameMutex);
-        mLatestFrame = data;
-        mNewFrameReceived = true;
-    });
+    mLatencyHistory.resize(MAX_LATENCY_HISTORY);
+    auto dataReceived = [this](const std::string& data) {
+        try {
+            long long receivedTimestampMs = std::stoll(data);
+            
+            auto now = std::chrono::system_clock::now();
+            auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+            long long latency = nowMs - receivedTimestampMs;
 
-    mClient->setOnConnected([this]() {
+            uint64_t currentCountCopy = ++mCurrentCount;
+            mLatencyHistory[currentCountCopy % MAX_LATENCY_HISTORY] = latency;
+            if (currentCountCopy % 1000 == 0) {
+                Print::PrintLine(Print::composeMessage("Latency history size: ", currentCountCopy));
+            }
+            if (currentCountCopy % MAX_LATENCY_HISTORY == 0) {
+                Print::PrintLine(Print::composeMessage("Latency history size exceeded ", MAX_LATENCY_HISTORY, ", removing oldest entry."));
+
+                long long sum = std::accumulate(mLatencyHistory.begin(), mLatencyHistory.end(), 0LL);
+                mAverageLatency = static_cast<double>(sum) / MAX_LATENCY_HISTORY;
+                
+                Print::PrintLine(Print::composeMessage("Average latency: ", mAverageLatency, " ms (", MAX_LATENCY_HISTORY, " samples)"));
+            }
+
+            // Зберігаємо оригінальний рядок для сумісності з існуючим кодом
+            // std::lock_guard<std::mutex> lock(mFrameMutex);
+            // mLatestFrame = data;
+            // mNewFrameReceived = true;
+            
+        } catch (const std::exception& e) {
+            Print::PrintLine(Print::composeMessage("Error parsing timestamp: ", e.what()), std::cerr);
+        }
+    };
+    auto connectedCallback = [this]() {
         Print::PrintLine("Connected to server!");
         mConnected = true;
-    });
+    };
 
-    mClient->setOnDisconnected([this]() {
+    auto disconnectedCallback = [this]() {
         Print::PrintLine("Disconnected from server!");
         mConnected = false;
-    });
+    };
+
+    for (const auto& client : mClients) {
+        client->setOnDataReceived(dataReceived);
+        client->setOnConnected(connectedCallback);
+        client->setOnDisconnected(disconnectedCallback);
+    }
 }
 
 bool Application::initWindow() {

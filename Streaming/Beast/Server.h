@@ -35,6 +35,11 @@ public:
 private:
     void onAccept(Acceptor::TcpSocketPtr socketPtr);
 private:
+    struct ServerStats {
+        size_t totalConnections = 0;
+        size_t closedConnections = 0;
+    };
+private:
     using IoContext = boost::asio::io_context;
     using SessionStorage = std::set<SessionPtr>;
     using AcceptorPtr = std::unique_ptr<Acceptor>;
@@ -49,6 +54,8 @@ private:
     AtomicFlag mRunning;
     AcceptorPtr mAcceptor;
     ThreadPool mThreadPool;
+
+    ServerStats mServerStats;
 };
 
 } // namespace Streaming::Beast

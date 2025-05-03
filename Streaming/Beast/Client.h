@@ -43,8 +43,10 @@ private:
 private:
     std::string mServerAddress;
     int mServerPort;
-    IoContext mIoContext;
-    OptionalWorkGuard mWork;
+    inline static AtomicFlag mIsFirstTime = true;
+    static IoContext mIoContext;
+    std::vector<std::jthread> mThreads;
+    static OptionalWorkGuard mWork;
     WebSocketPtr mWebSocket;
     ResolverPtr mResolver;
     Buffer mBuffer;

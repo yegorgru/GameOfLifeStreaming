@@ -14,6 +14,10 @@
 
 namespace Streaming::Beast {
 
+// Define static members
+boost::asio::io_context BeastClient::mIoContext;
+std::optional<BeastClient::WorkGuard> BeastClient::mWork;
+
 namespace {
     const char FRAME_DELIMITER = '\n';
     namespace beast = boost::beast;
@@ -59,7 +63,10 @@ bool BeastClient::connect(const std::string& serverAddress, int port) {
     );
     
     try {
-        mIoContext.restart();
+        bool isFirstTime = mIsFirstTime.exchange(false);
+        if (isFirstTime) {
+            mIoContext.restart();
+        }
         
         mResolver = std::make_unique<Resolver>(mIoContext);
         auto const results = mResolver->resolve(mServerAddress, std::to_string(mServerPort));
@@ -91,16 +98,19 @@ bool BeastClient::connect(const std::string& serverAddress, int port) {
             Print::composeMessage("Connected to WebSocket server at ", mServerAddress, ":", mServerPort)
         );
         
-        mWork.emplace(mIoContext.get_executor());
+        if (isFirstTime) {
+            mWork.emplace(mIoContext.get_executor());
+            for (int i = 0; i < 6; ++i) {
+                mThreads.emplace_back([this]() {
+                    try {
+                        mIoContext.run();
+                    } catch (const std::exception& e) {
+                        Log::Error(Print::composeMessage("Exception in io_context thread: ", e.what()));
+                    }
+                });
+            }
+        }
         mRunning = true;
-        mThread = std::jthread([this]() {
-            try {
-                mIoContext.run();
-            }
-            catch  (const std::exception& e) {
-                Log::Error(Print::composeMessage("Exception in io_context thread: ", e.what()));
-            }
-        });
         
         {
             std::lock_guard<std::mutex> lock(mMutex);

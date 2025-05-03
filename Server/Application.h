@@ -27,7 +27,7 @@ private:
     Config mConfig;
     ServerPtr mServer;
     AtomicFlag mRunning;
-    GameOfLifePtr mGameOfLife;
+    GameOfLifePtr mGameOfLife; 
 };
 
 } // namespace GameOfLife::Server
