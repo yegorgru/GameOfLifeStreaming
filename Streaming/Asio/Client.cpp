@@ -3,18 +3,36 @@
 
 namespace Streaming::Asio {
 
+boost::asio::io_context AsioClient::mIoContext;
+std::optional<AsioClient::WorkGuard> AsioClient::mWork;
+
 namespace {
     const size_t MAX_BUFFER_SIZE = 4096;
     const char FRAME_DELIMITER = '\n';
 }
 
 AsioClient::AsioClient()
-    : mIoContext()
-    , mSocket(mIoContext)
+    : mSocket(mIoContext)
     , mReceiveBuffer(MAX_BUFFER_SIZE, ' ')
     , mFrameBuffer("")
     , mRunning(false)
     , mConnected(false) {
+        bool isFirstTime = mIsFirstTime.exchange(false);
+        if (isFirstTime) {
+            mWork.emplace(mIoContext.get_executor());
+            for (int i = 0; i < 6; ++i) {
+                mThreads.emplace_back([this]() {
+                    try {
+                        mIoContext.run();
+                    } catch (const std::exception& e) {
+                        Log::Error(Print::composeMessage("Exception in io_context thread: ", e.what()));
+                    }
+                });
+            }
+        }
+        if (isFirstTime) {
+            mIoContext.restart();
+        }
 }
 
 AsioClient::~AsioClient() {
@@ -27,6 +45,7 @@ bool AsioClient::connect(const std::string& multicastAddress, int port) {
     }
 
     try {
+
         namespace ip = boost::asio::ip;
         using udp = ip::udp;
 
@@ -43,26 +62,16 @@ bool AsioClient::connect(const std::string& multicastAddress, int port) {
 
         mSocket.set_option(ip::multicast::join_group(multicastIp));
 
-        mWork.emplace(boost::asio::make_work_guard(mIoContext));
         mRunning = true;
-        
-        mThread = std::jthread([this]() {
-            try {
-                mIoContext.run();
-            }
-            catch (const std::exception& e) {
-                std::cerr << "Error in IO context thread: " << e.what() << std::endl;
-                mRunning = false;
-            }
-        });
 
-        startReceive();
         
         mConnected = true;
         
         if (mOnConnected) {
             mOnConnected();
         }
+
+        Log::Info("Connected to multicast group: " + multicastAddress + ":" + std::to_string(port));
         
         return true;
     }
@@ -100,9 +109,9 @@ void AsioClient::disconnect() {
         
         mIoContext.stop();
         
-        if (mThread.joinable()) {
-            mThread.join();
-        }
+        // if (mThread.joinable()) {
+        //     mThread.join();
+        // }
         
         if (mOnDisconnected) {
             mOnDisconnected();

@@ -21,8 +21,8 @@ public:
     void setOnDisconnected(ConnectionCallback callback) override;
     void setOnDataReceived(DataCallback callback) override;
     bool isConnected() const override;
+    void startReceive() override;
 private:
-    void startReceive();
     void handleReceive(const boost::system::error_code& error, std::size_t bytesReceived);
 private:
     using udp = boost::asio::ip::udp;
@@ -33,13 +33,14 @@ private:
     using AtomicFlag = std::atomic<bool>;
     using Buffer = std::string;
 private:
-    IoContext mIoContext;
+    inline static AtomicFlag mIsFirstTime = true;
+    static IoContext mIoContext;
+    std::vector<std::jthread> mThreads;
+    static WorkGuardOptional mWork;
     Socket mSocket;
     udp::endpoint mSenderEndpoint;
     Buffer mReceiveBuffer;
     Buffer mFrameBuffer;
-    WorkGuardOptional mWork;
-    std::jthread mThread;
     AtomicFlag mRunning;
     AtomicFlag mConnected;
     std::string mMulticastAddress;

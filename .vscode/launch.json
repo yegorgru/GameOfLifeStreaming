@@ -10,9 +10,9 @@
                 "--server-port", "9000",
                 "--fps", "5",
                 "--cell-size", "30",
-                "--multicast-address", "computer.host",
-                //"--multicast-address", "239.255.0.1",
-                "--log-level", "debug"
+                //"--multicast-address", "computer.host",
+                "--multicast-address", "239.255.0.1",
+                "--log-level", "info"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -30,8 +30,8 @@
                 "--log-level", "debug",
                 "--fps", "3",
                 "--grid-size", "60x30",
-                "--multicast-address", "192.168.0.222",
-                //"--multicast-address", "239.255.0.1",
+                //"--multicast-address", "192.168.0.222",
+                "--multicast-address", "239.255.0.1",
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -50,7 +50,7 @@
                 "--cell-size", "30",
                 "--multicast-address", "computer.host",
                 //"--multicast-address", "239.255.0.1",
-                "--log-level", "error"
+                "--log-level", "info"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",            

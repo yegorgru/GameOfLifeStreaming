@@ -74,7 +74,6 @@ void Application::run() {
     while (mRunning && !gShutdownRequested) {
         mGameOfLife->update();        
         
-        // Send current timestamp instead of game data
         auto now = std::chrono::system_clock::now();
         auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
         std::string timestamp = std::to_string(nowMs) + "\n";

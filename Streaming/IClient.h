@@ -19,6 +19,7 @@ public:
     virtual void setOnDisconnected(ConnectionCallback callback) = 0;
     virtual void setOnDataReceived(DataCallback callback) = 0;
     virtual bool isConnected() const = 0;
+    virtual void startReceive() = 0;
 };
 
 using ClientPtr = std::unique_ptr<IClient>;

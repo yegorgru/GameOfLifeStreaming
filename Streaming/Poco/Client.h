@@ -24,8 +24,9 @@ public:
     void setOnDisconnected(std::function<void()> callback) override;
     void setOnDataReceived(std::function<void(const std::string&)> callback) override;
     bool isConnected() const override;
+    void startReceive() override;
 private:
-    void receiveLoop(std::stop_token stopToken);
+    void receiveLoop();
     void handleReceivedData(int length);
 private:
     using MulticastSocket = ::Poco::Net::MulticastSocket;
@@ -33,6 +34,8 @@ private:
     using SocketAddress = ::Poco::Net::SocketAddress;
     using AtomicFlag = std::atomic<bool>;
 private:
+    inline static AtomicFlag mIsFirstTime = true;
+
     SocketPtr mSocket;
     SocketAddress mMulticastGroupAddress;
     SocketAddress mSenderAddress;

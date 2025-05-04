@@ -44,11 +44,11 @@ private:
     int mGridWidth;
     int mGridHeight;
     int mCellSize;
-      // Для вимірювання латентності мережі
+
     std::deque<long long> mLatencyHistory;
     double mAverageLatency = 0.0;
-    uint64_t clientsNumber = 15000;
-    uint64_t MAX_LATENCY_HISTORY = 15000 * 1000;
+    uint64_t clientsNumber = 5000;
+    uint64_t MAX_LATENCY_HISTORY = 5000 * 1000;
     std::atomic<uint64_t> mCurrentCount = 0;
 };
 

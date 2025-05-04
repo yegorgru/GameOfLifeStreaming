@@ -25,8 +25,8 @@ public:
     void setOnConnected(ConnectionCallback callback) override;
     void setOnDisconnected(ConnectionCallback callback) override;
     void setOnDataReceived(DataCallback callback) override;
+    void startReceive() override;
 private:
-    void doRead();
     void doClose();
     void fail(boost::system::error_code ec, const std::string& what);
 private:

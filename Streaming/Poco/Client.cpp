@@ -3,6 +3,8 @@
 #include "Print.h"
 #include <stop_token>
 
+#include "ThreadPoolManager.h"
+
 namespace Streaming::Poco {
 
 namespace {
@@ -16,6 +18,11 @@ PocoClient::PocoClient()
     , mReceiveBuffer(MAX_BUFFER_SIZE, ' ')
 {
     Log::Debug("PocoClient created.");
+
+    if (mIsFirstTime.exchange(false)) {
+        ThreadPoolManager::Init();
+        ThreadPoolManager::Get().start(1, 6);
+    }
 }
 
 PocoClient::~PocoClient() {
@@ -50,10 +57,6 @@ bool PocoClient::connect(const std::string& multicastAddress, int port) {
 
         mRunning = true;
         mConnected = true;
-
-        mReceiveThread = std::jthread([this](std::stop_token stoken) {
-            receiveLoop(stoken); 
-        });
 
         Log::Info(Print::composeMessage("PocoClient connected. Joined group: ", mMulticastGroupAddress.host().toString(), " on port ", port));
 
@@ -153,11 +156,17 @@ void PocoClient::setOnDataReceived(std::function<void(const std::string&)> callb
     mOnDataReceived = std::move(callback);
 }
 
-void PocoClient::receiveLoop(std::stop_token stopToken) {
+void PocoClient::startReceive() {
+        ThreadPoolManager::Get().enqueue([this]() {
+            receiveLoop();
+        });
+}
+
+void PocoClient::receiveLoop() {
     Log::Debug("PocoClient receive loop started.");
     ::Poco::Timespan timeout(10000);
 
-    while (!stopToken.stop_requested() && mRunning) {
+    while (mRunning) {
         namespace PocoNet = ::Poco::Net;
         try {
             if (mSocket && mSocket->poll(timeout, PocoNet::Socket::SELECT_READ)) {
@@ -170,18 +179,16 @@ void PocoClient::receiveLoop(std::stop_token stopToken) {
                     Log::Warning("ReceiveFrom returned negative value after poll indicated readability.");
                 }
             } else {
-                if (stopToken.stop_requested() || !mRunning) {
+                if (!mRunning) {
                     break;
                 }
             }
         } 
         catch (const ::Poco::TimeoutException&) {
-            if (stopToken.stop_requested() || !mRunning) {
-                break;
-            }
+
         } 
         catch (const PocoNet::NetException& e) {
-            if (mRunning && e.code() != POCO_EINTR && e.code() != POCO_EAGAIN && e.code() != POCO_EWOULDBLOCK) { // Ignore interrupt/retry errors if still running
+            if (mRunning && e.code() != POCO_EINTR && e.code() != POCO_EAGAIN && e.code() != POCO_EWOULDBLOCK) {
                 Log::Error(Print::composeMessage("Poco NetException in receive loop: ", e.displayText()));
             }
         } 

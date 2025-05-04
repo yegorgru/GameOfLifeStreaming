@@ -112,6 +112,12 @@ bool Application::setupClient() {
                 return false;
             }
         }
+
+        for (size_t i = 0; i < mClients.size(); ++i) {
+            Print::PrintLine(Print::composeMessage("Start Receiving ", i + 1, " of ", mClients.size(), "..."));
+            mClients[i]->startReceive();
+        }
+
         return true;
     }
     catch (const std::exception& e) {
@@ -143,11 +149,6 @@ void Application::setupCallbacks() {
                 
                 Print::PrintLine(Print::composeMessage("Average latency: ", mAverageLatency, " ms (", MAX_LATENCY_HISTORY, " samples)"));
             }
-
-            // Зберігаємо оригінальний рядок для сумісності з існуючим кодом
-            // std::lock_guard<std::mutex> lock(mFrameMutex);
-            // mLatestFrame = data;
-            // mNewFrameReceived = true;
             
         } catch (const std::exception& e) {
             Print::PrintLine(Print::composeMessage("Error parsing timestamp: ", e.what()), std::cerr);

@@ -118,8 +118,6 @@ bool BeastClient::connect(const std::string& serverAddress, int port) {
                 mOnConnected();
             }
         }
-
-        doRead();
         
         return true;
     } catch (const std::exception& e) {
@@ -198,7 +196,7 @@ void BeastClient::setOnDataReceived(DataCallback callback) {
     mOnDataReceived = std::move(callback);
 }
 
-void BeastClient::doRead() {
+void BeastClient::startReceive() {
     if (!mRunning || !mConnected) {
         return;
     }
@@ -237,7 +235,7 @@ void BeastClient::doRead() {
                 }
                 delimiterPos = mFrameBuffer.find(FRAME_DELIMITER);
             }
-            doRead();
+            startReceive();
         });
 }
 
